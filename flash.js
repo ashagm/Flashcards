@@ -2,8 +2,8 @@
 //requiring our node packages and JSON files
 var fs = require("fs");
 var inquirer = require("inquirer");
-var question = require("./basicFlashCards.json");
-var cloze = require("./clozeFlashCards.json");
+var basicQuestions = require("./basicFlashCards.json");
+var clozeQuestions = require("./clozeFlashCards.json");
 
 var score;
 var count;
@@ -75,28 +75,31 @@ function playCards(){
 
 var playBasicCard = function() {
     
-    if (count < question.length){
+    if (count < basicQuestions.length){
 
         inquirer.prompt([
             {
-                name: "question",
-                message: question[count].question
+                name: "answer",
+                message: basicQuestions[count].front
             }
-        ]).then(function(answers){
-            if (answers.question === question[count].answer){
+        ]).then(function(response){
+
+            if (response.answer === basicQuestions[count].back){
                 score++;
                 console.log(`-----------------------------`);
-                console.log(`That's correct!`);console.log(`Current Score: ${score}`);
+                console.log(`That's correct!`);
+                console.log(`Current Score: ${score}`);
                 console.log(`-----------------------------`);
             } else {
                 console.log(`-----------------------------`);
-                console.log(`That's incorrect! The correct answer is ${question[count].answer}`);console.log(`Current Score: ${score}`);
+                console.log(`That's incorrect! The correct answer is ${basicQuestions[count].back}`);
+                console.log(`Current Score: ${score}`);
                 console.log(`-----------------------------`);
             }
             count++;
             playBasicCard();
         });
-    } else if (count > question.length - 1){
+    } else if (count > basicQuestions.length - 1){
         console.log(`-----------------------------`);
         console.log(`All cards completed!`);
         console.log(`Your Score: ${score}`);
@@ -107,24 +110,26 @@ var playBasicCard = function() {
 
 var playClozeCard = function() {
     
-    if (count < cloze.length){
+    if (count < clozeQuestions.length){
         
         inquirer.prompt([
             {
-                name: "question",
-                message: cloze[count].question
+                name: "answer",
+                message: clozeQuestions[count].question
             }
-        ]).then(function(answers){
+        ]).then(function(response){
 
-            if (answers.question === cloze[count].clozeDeleted){
+            if (response.answer === clozeQuestions[count].clozeDeleted){
                 score++;
                 console.log(`-----------------------------`);
-                console.log(`That's correct!`); console.log(`Current Score: ${score}`);
+                console.log(`That's correct!`); 
+                console.log(`Current Score: ${score}`);
                 console.log(`-----------------------------`);
 
             } else {
                 console.log(`-----------------------------`);
-                console.log(`That's incorrect! The correct answer is ${cloze[count].clozeDeleted}`);console.log(`Current Score: ${score}`);
+                console.log(`That's incorrect! The correct answer is ${clozeQuestions[count].clozeDeleted}`);
+                console.log(`Current Score: ${score}`);
                 console.log(`-----------------------------`);
             }
 
@@ -132,7 +137,7 @@ var playClozeCard = function() {
             playClozeCard();
         });
 
-    } else if (count > cloze.length - 1){
+    } else if (count > clozeQuestions.length - 1){
         console.log(`-----------------------------`);
         console.log(`All cards completed!`); console.log(`Your Score: ${score}`);
         console.log(`-----------------------------`);

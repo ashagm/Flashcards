@@ -1,14 +1,14 @@
 [
   {
-    "question": "Who was our Immediate Past President? (Last name only)",
-    "answer": "Obama"
+    "front": "Who was our Immediate Past President? (Last name only)",
+    "back": "Obama"
   },
   {
-    "question": "Who is our Current President?( Last name only)",
-    "answer": "Trump"
+    "front": "Who is our Current President?( Last name only)",
+    "back": "Trump"
   },
   {
-    "question": "Who was our first President (Last name only?",
-    "answer": "Washington"
+    "front": "Who was our first President (Last name only?",
+    "back": "Washington"
   }
 ]
