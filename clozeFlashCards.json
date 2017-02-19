@@ -1,0 +1,19 @@
+[
+  {
+    "question": ".......... is the last President of United States( Last Name)",
+    "clozeDeleted": "Obama"
+  },
+  {
+    "question": ".......... is the current President of United States(Last name)",
+    "clozeDeleted": "Trump"
+  },
+  {
+    "question": ".......... is the First President of United States(Last Name)",
+    "clozeDeleted": "Washington"
+  },
+  {
+    "question": ".......... ran for the POTUS post from Democratic party (First name)",
+    "clozeDeleted": "Hillary"
+  }
+]
+

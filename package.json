@@ -1,0 +1,26 @@
+{
+  "name": "flashcards",
+  "version": "1.0.0",
+  "description": "A node.js application using Object oriented Javascript",
+  "main": "flash.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashagm/Flashcards.git"
+  },
+  "keywords": [
+    "node.js"
+  ],
+  "author": "Asha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashagm/Flashcards/issues"
+  },
+  "homepage": "https://github.com/ashagm/Flashcards#readme",
+  "dependencies": {
+    "inquirer": "^3.0.1",
+    "request": "^2.79.0"
+  }
+}
