@@ -1,5 +1,5 @@
 "use strict";
-//requiring our node packages and JSON files
+
 var fs = require("fs");
 var inquirer = require("inquirer");
 var basicQuestions = require("./basicFlashCards.json");
@@ -7,11 +7,14 @@ var clozeQuestions = require("./clozeFlashCards.json");
 
 var score;
 var count;
+var basicCardArray = [];
+var clozeCardArray = [];
 
 var BasicCard = function (front, back){
     if(this instanceof BasicCard){
         this.front = front;
         this.back = back;
+
     }else{
         return new BasicCard(front, back);
     }
@@ -23,27 +26,117 @@ BasicCard.prototype.returnBasicCard = function(){
 
 function ClozeCard(text, cloze){
     if(this instanceof ClozeCard){
-        this.fullText = text;
-        this.clozeText = cloze;
-        this.partialText = text.replace(cloze, "( ... )")
+        this.text = text;
+        this.cloze = cloze;
     } else {
         return new ClozeCard(text, cloze);
     }    
 }
 
 ClozeCard.prototype.returnClozeText = function() {
-    console.log("this cloze = " + this.clozeText);
-    return(this.clozeText);
+    console.log("this cloze = " + this.cloze);
+    return(this.cloze);
 }
 
 ClozeCard.prototype.returnFullText = function() {
-    console.log("this full = " + this.fullText);
-    return(this.fullText);
+    console.log("this full = " + this.text);
+    return(this.text);
 }
 
-ClozeCard.prototype.returnPartialText = function() {
-    console.log("this partial = " + this.partialText);
-    return(this.partialText);
+function readBasicFlashCardFile(){
+    fs.readFile("basicFlashCards.json", 'utf8', function (err,data) {
+      data = JSON.parse(data); 
+      for(var i = 0; i < data.length; i++) {
+        var newBasicCard = new BasicCard();
+        newBasicCard.front = data[i].front;
+        newBasicCard.back = data[i].back;
+        basicCardArray.push(newBasicCard);
+      }
+    });
+}
+
+function readClozeFlashCardFile(){
+    fs.readFile("clozeFlashCards.json", 'utf8', function (err,data) {
+      data = JSON.parse(data); 
+      for(var i = 0; i < data.length; i++) {
+        var newClozeCard = new ClozeCard();
+        newClozeCard.text = data[i].question;
+        newClozeCard.cloze = data[i].clozeDeleted;
+        clozeCardArray.push(newClozeCard);
+      }
+    });
+}
+
+function playBasicCardObjects(){
+
+    if( count < basicCardArray.length){
+        inquirer.prompt([
+            {
+                name: "answer",
+                message: basicCardArray[count].front
+            }
+        ]).then(function(response){
+
+            if (response.answer === basicCardArray[count].back){
+                score++;
+                console.log(`-----------------------------`);
+                console.log(`That's correct!`);
+                console.log(`Current Score: ${score}`);
+                console.log(`-----------------------------`);
+            } else {
+                console.log(`-----------------------------`);
+                console.log(`That's incorrect! The correct answer is ${basicCardArray[count].back}`);
+                console.log(`Current Score: ${score}`);
+                console.log(`-----------------------------`);
+            }
+            count++;
+            playBasicCardObjects();
+        });
+
+     } else if (count > basicCardArray.length - 1){
+        console.log(`-----------------------------`);
+        console.log(`All cards completed!`);
+        console.log(`Your Score: ${score}`);
+        console.log(`-----------------------------`);
+        playCards();
+    }
+
+}
+
+function playClozeCardObjects(){
+
+    if( count < clozeCardArray.length){
+        inquirer.prompt([
+            {
+                name: "answer",
+                message: clozeCardArray[count].text
+            }
+        ]).then(function(response){
+
+            if (response.answer === clozeCardArray[count].cloze){
+                score++;
+                console.log(`-----------------------------`);
+                console.log(`That's correct!`);
+                console.log(`Current Score: ${score}`);
+                console.log(`-----------------------------`);
+            } else {
+                console.log(`-----------------------------`);
+                console.log(`That's incorrect! The correct answer is ${clozeCardArray[count].back}`);
+                console.log(`Current Score: ${score}`);
+                console.log(`-----------------------------`);
+            }
+            count++;
+            playClozeCardObjects();
+        });
+
+     } else if (count > clozeCardArray.length - 1){
+        console.log(`-----------------------------`);
+        console.log(`All cards completed!`);
+        console.log(`Your Score: ${score}`);
+        console.log(`-----------------------------`);
+        playCards();
+    }
+
 }
 
 function playCards(){
@@ -61,9 +154,11 @@ function playCards(){
 
     }).then(function(answers) {
         if (answers.command === "BasicCard") {
-            playBasicCard();
+            // playBasicCard();
+            playBasicCardObjects();
         } else if (answers.command === "ClozeCard") {
-            playClozeCard();
+            // playClozeCard();
+            playClozeCardObjects();
         }else{
             console.log("Exiting.....");
             process.exit();
@@ -72,78 +167,84 @@ function playCards(){
 
 }
 
-
-var playBasicCard = function() {
-    
-    if (count < basicQuestions.length){
-
-        inquirer.prompt([
-            {
-                name: "answer",
-                message: basicQuestions[count].front
-            }
-        ]).then(function(response){
-
-            if (response.answer === basicQuestions[count].back){
-                score++;
-                console.log(`-----------------------------`);
-                console.log(`That's correct!`);
-                console.log(`Current Score: ${score}`);
-                console.log(`-----------------------------`);
-            } else {
-                console.log(`-----------------------------`);
-                console.log(`That's incorrect! The correct answer is ${basicQuestions[count].back}`);
-                console.log(`Current Score: ${score}`);
-                console.log(`-----------------------------`);
-            }
-            count++;
-            playBasicCard();
-        });
-    } else if (count > basicQuestions.length - 1){
-        console.log(`-----------------------------`);
-        console.log(`All cards completed!`);
-        console.log(`Your Score: ${score}`);
-        console.log(`-----------------------------`);
-        playCards();
-    }
-};
-
-var playClozeCard = function() {
-    
-    if (count < clozeQuestions.length){
-        
-        inquirer.prompt([
-            {
-                name: "answer",
-                message: clozeQuestions[count].question
-            }
-        ]).then(function(response){
-
-            if (response.answer === clozeQuestions[count].clozeDeleted){
-                score++;
-                console.log(`-----------------------------`);
-                console.log(`That's correct!`); 
-                console.log(`Current Score: ${score}`);
-                console.log(`-----------------------------`);
-
-            } else {
-                console.log(`-----------------------------`);
-                console.log(`That's incorrect! The correct answer is ${clozeQuestions[count].clozeDeleted}`);
-                console.log(`Current Score: ${score}`);
-                console.log(`-----------------------------`);
-            }
-
-            count++;
-            playClozeCard();
-        });
-
-    } else if (count > clozeQuestions.length - 1){
-        console.log(`-----------------------------`);
-        console.log(`All cards completed!`); console.log(`Your Score: ${score}`);
-        console.log(`-----------------------------`);
-        playCards();
-    }
-};
-
 //start game
+readBasicFlashCardFile();
+readClozeFlashCardFile();
 playCards();
+
+
+
+//without using OOP
+
+// var playBasicCard = function() {
+    
+//     if (count < basicQuestions.length){
+
+//         inquirer.prompt([
+//             {
+//                 name: "answer",
+//                 message: basicQuestions[count].front
+//             }
+//         ]).then(function(response){
+
+//             if (response.answer === basicQuestions[count].back){
+//                 score++;
+//                 console.log(`-----------------------------`);
+//                 console.log(`That's correct!`);
+//                 console.log(`Current Score: ${score}`);
+//                 console.log(`-----------------------------`);
+//             } else {
+//                 console.log(`-----------------------------`);
+//                 console.log(`That's incorrect! The correct answer is ${basicQuestions[count].back}`);
+//                 console.log(`Current Score: ${score}`);
+//                 console.log(`-----------------------------`);
+//             }
+//             count++;
+//             playBasicCard();
+//         });
+//     } else if (count > basicQuestions.length - 1){
+//         console.log(`-----------------------------`);
+//         console.log(`All cards completed!`);
+//         console.log(`Your Score: ${score}`);
+//         console.log(`-----------------------------`);
+//         playCards();
+//     }
+// };
+
+// var playClozeCard = function() {
+    
+//     if (count < clozeQuestions.length){
+        
+//         inquirer.prompt([
+//             {
+//                 name: "answer",
+//                 message: clozeQuestions[count].question
+//             }
+//         ]).then(function(response){
+
+//             if (response.answer === clozeQuestions[count].clozeDeleted){
+//                 score++;
+//                 console.log(`-----------------------------`);
+//                 console.log(`That's correct!`); 
+//                 console.log(`Current Score: ${score}`);
+//                 console.log(`-----------------------------`);
+
+//             } else {
+//                 console.log(`-----------------------------`);
+//                 console.log(`That's incorrect! The correct answer is ${clozeQuestions[count].clozeDeleted}`);
+//                 console.log(`Current Score: ${score}`);
+//                 console.log(`-----------------------------`);
+//             }
+
+//             count++;
+//             playClozeCard();
+//         });
+
+//     } else if (count > clozeQuestions.length - 1){
+//         console.log(`-----------------------------`);
+//         console.log(`All cards completed!`); console.log(`Your Score: ${score}`);
+//         console.log(`-----------------------------`);
+//         playCards();
+//     }
+// };
+
